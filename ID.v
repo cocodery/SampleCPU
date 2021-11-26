@@ -104,11 +104,31 @@ module ID(
     assign offset = inst[15:0];
     assign sel = inst[2:0];
 
-    wire inst_ori, inst_lui, inst_addiu;
-    // Branch-Instruction
-    wire inst_beq,  inst_bne,   inst_bgez,  inst_bgtz;
-    wire inst_blez, inst_bltz,  inst_bltzal,inst_bgezal;
-    wire inst_j,    inst_jal,   inst_jr,    inst_jalr; 
+    // Arithmetic 14
+    wire inst_add,   inst_addi,  inst_addu,  inst_addiu;
+    wire inst_sub,   inst_subu,  inst_slt,   inst_slti;
+    wire inst_sltu,  inst_sltiu, inst_div,   inst_divu;
+    wire inst_mult,  inst_multu;
+    // Logic 8
+    wire inst_and,   inst_andi,  inst_lui,   inst_nor
+    wire inst_or,    inst_ori,   inst_xor,   inst_xori;
+    // Shift 6
+    wire inst_sllv,  inst_sll,   inst_srav,  inst_sra;
+    wire inst_srlv,  inst_srl;
+    // Branch Instruction 12
+    wire inst_beq,   inst_bne,   inst_bgez,  inst_bgtz;
+    wire inst_blez,  inst_bltz,  inst_bltzal,inst_bgezal;
+    wire inst_j,     inst_jal,   inst_jr,    inst_jalr;
+    // Data Move 4
+    wire inst_mfhi,  inst_mflo,  inst_mthi,  inst_mtlo;
+    // Trap 2
+    wire inst_break, inst_syscall;
+    // Memory Access 8
+    wire inst_lb,    inst_lbu,   inst_lh,    inst_lhu;
+    wire inst_lw,    inst_sb,    inst_sh,    inst_sw;
+    // Super 3
+    wire inst_eret,  inst_mfc0,  inst_mtc0;
+
 
     wire op_add, op_sub, op_slt, op_sltu;
     wire op_and, op_nor, op_or, op_xor;
@@ -141,17 +161,17 @@ module ID(
 
     // Branch-Instruction
     assign inst_beq     = op_d[6'b00_0100];
-    assign inst_bne     = op_d[6'b00_0101]
-    assign inst_bgez    = op_d[6'b00_0001]
-    assign inst_bgtz    = op_d[6'b00_0111]
-    assign inst_blez    = op_d[6'b00_0110]
-    assign inst_bltz    = op_d[6'b00_0001]
-    assign inst_bgezal  = op_d[6'b00_0001]
-    assign inst_bltzal  = op_d[6'b00_0001]
-    assign inst_j       = op_d[6'b00_0010]
-    assign inst_jal     = op_d[6'b00_0011]
-    assign inst_jr      = op_d[6'b00_0000]
-    assign inst_jalr    = op_d[6'b00_0000]
+    assign inst_bne     = op_d[6'b00_0101];
+    assign inst_bgez    = op_d[6'b00_0001] & rt_d[5'b0_0001];
+    assign inst_bgtz    = op_d[6'b00_0111];
+    assign inst_blez    = op_d[6'b00_0110];
+    assign inst_bltz    = op_d[6'b00_0001] & rt_d[5'b0_0000];
+    assign inst_bgezal  = op_d[6'b00_0001] & rt_d[5'b1_0001];
+    assign inst_bltzal  = op_d[6'b00_0001] & rt_d[5'b1_0000];
+    assign inst_j       = op_d[6'b00_0010];
+    assign inst_jal     = op_d[6'b00_0011];
+    assign inst_jr      = op_d[6'b00_0000] & func_d[6'b00_1000];
+    assign inst_jalr    = op_d[6'b00_0000] & func_d[6'b00_1001];
 
 
     // rs to reg1
