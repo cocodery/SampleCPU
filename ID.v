@@ -154,10 +154,32 @@ module ID(
         .out (rt_d )
     );
 
-    
-    assign inst_ori     = op_d[6'b00_1101];
-    assign inst_lui     = op_d[6'b00_1111];
+    // Arithmetic
+    assign inst_add     = op_d[6'b00_0000] & func_d[6'b10_0000];
+    assign inst addi    = op_d[6'b00_1000];
+    assign inst_addu    = op_d[6'b00_0000] & func_d[6'b10_0001];
     assign inst_addiu   = op_d[6'b00_1001];
+    assign inst_sub     = op_d[6'b00_0000] & func_d[6'b10_0010];
+    assign inst_subu    = op_d[6'b00_0000] & func_d[6'b10_0011];
+    assign inst_slt     = op_d[6'b00_0000] & func_d[6'b10_1010];
+    assign inst_slti    = op_d[6'b00_1010];
+    assign inst_sltu    = op_d[6'b00_0000] & func_d[6'b10_1011];
+    assign inst_sltiu   = op_d[6'b00_1011];
+
+    assign inst_div     = op_d[6'b00_0000] & func_d[6'b01_1010];
+    assign inst_divu    = op_d[6'b00_0000] & func_d[6'b01_1011];
+    assign inst_mult    = op_d[6'b00_0000] & func_d[6'b01_1000];
+    assign inst_multu   = op_d[6'b00_0000] & func_d[6'b01_1001];
+    // Logic 8
+    assign inst_and     = op_d[6'b00_0000] & func_d[6'b10_0100];
+    assign inst_andi    = op_d[6'b00_1100];
+    assign inst_lui     = op_d[6'b00_1111];
+    assign inst_nor     = op_d[6'b00_0000] & func_d[6'b10_0111];
+    assign inst_or      = op_d[6'b00_0000] & func_d[6'b10_0101];
+    assign inst_ori     = op_d[6'b00_1101];
+    assign inst_xor     = op_d[6'b00_0000] & func_d[6'b10_0110];
+    assign inst_xori    = op_d[6'b00_1110];
+    // Shift
 
     // Branch-Instruction
     assign inst_beq     = op_d[6'b00_0100];
