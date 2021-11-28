@@ -110,7 +110,7 @@ module ID(
     wire inst_sltu,  inst_sltiu, inst_div,   inst_divu;
     wire inst_mult,  inst_multu;
     // Logic 8
-    wire inst_and,   inst_andi,  inst_lui,   inst_nor
+    wire inst_and,   inst_andi,  inst_lui,   inst_nor;
     wire inst_or,    inst_ori,   inst_xor,   inst_xori;
     // Shift 6
     wire inst_sllv,  inst_sll,   inst_srav,  inst_sra;
@@ -156,7 +156,7 @@ module ID(
 
     // Arithmetic
     assign inst_add     = op_d[6'b00_0000] & func_d[6'b10_0000];
-    assign inst addi    = op_d[6'b00_1000];
+    assign inst_addi    = op_d[6'b00_1000];
     assign inst_addu    = op_d[6'b00_0000] & func_d[6'b10_0001];
     assign inst_addiu   = op_d[6'b00_1001];
     assign inst_sub     = op_d[6'b00_0000] & func_d[6'b10_0010];
@@ -346,10 +346,10 @@ module ID(
     assign pc_plus_4 = id_pc + 32'h4;
 
     assign rs_eq_rt = (rdata1 == rdata2);
-    assign rs_ge_z = ~rdata1[31]
-    assign rs_gt_z = (rdata1[31] == 1'b0 && rdata1 != 32'b0)
-    assign rs_le_z = (rdata1[31] == 1'b1 || rdata1 == 32'b0)
-    assign rs_lt_z = rdata1[31]
+    assign rs_ge_z = ~rdata1[31];
+    assign rs_gt_z = (rdata1[31] == 1'b0 & rdata1 != 32'b0);
+    assign rs_le_z = (rdata1[31] == 1'b1 | rdata1 == 32'b0);
+    assign rs_lt_z = rdata1[31];
 
     assign br_e = inst_beq    & rs_eq_rt
                 | inst_bne    & ~rs_eq_rt
@@ -362,7 +362,7 @@ module ID(
                 | inst_j
                 | inst_jal
                 | inst_jr
-                | inst_jalr
+                | inst_jalr;
     
     assign br_addr = inst_beq    ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) :
                      inst_bne    ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) :
@@ -376,7 +376,7 @@ module ID(
                      inst_jal    ? {pc_plus_4[31:28], inst[25:0], 2'b0}           :
                      inst_jr     ? rdata1                                         :
                      inst_jalr   ? rdata1                                         :
-                     32'b0
+                     32'b0;
 
     assign br_bus = {
         br_e,
