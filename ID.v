@@ -24,8 +24,10 @@ module ID(
     wire ce;
 
     wire wb_rf_we;
-    wire [4:0] wb_rf_waddr;
+    wire [4:0]  wb_rf_waddr;
     wire [31:0] wb_rf_wdata;
+
+    wire [31:0] rf_rdata1, rf_rdata2
 
     always @ (posedge clk) begin
         if (rst) begin
@@ -47,6 +49,7 @@ module ID(
         ce,
         id_pc
     } = if_to_id_bus_r;
+
     assign {
         wb_rf_we,
         wb_rf_waddr,
@@ -91,18 +94,27 @@ module ID(
         .wdata  (wb_rf_wdata  )
     );
 
-    assign opcode = inst[31:26];
-    assign rs = inst[25:21];
-    assign rt = inst[20:16];
-    assign rd = inst[15:11];
-    assign sa = inst[10:6];
-    assign func = inst[5:0];
-    assign imm = inst[15:0];
+    // if the register we read is wrote, we should read the new data
+    wire sel_r1_wdata;
+    wire sel_r2_wdata;
+    assign sel_r1_wdata = wb_rf_we & (wb_rf_waddr == rdata1);
+    assign sel_r2_wdata = wb_rf_we & (wb_rf_waddr == rdata2);
+
+    assign rf_rdata1 = sel_r1_wdata ? wb_rf_wdata : rdata1;
+    assign rf_rdata2 = sel_r2_wdata ? wb_rf_wdata : rdata2;
+
+    assign opcode      = inst[31:26];
+    assign rs          = inst[25:21];
+    assign rt          = inst[20:16];
+    assign rd          = inst[15:11];
+    assign sa          = inst[10:6];
+    assign func        = inst[5:0];
+    assign imm         = inst[15:0];
     assign instr_index = inst[25:0];
-    assign code = inst[25:6];
-    assign base = inst[25:21];
-    assign offset = inst[15:0];
-    assign sel = inst[2:0];
+    assign code        = inst[25:6];
+    assign base        = inst[25:21];
+    assign offset      = inst[15:0];
+    assign sel         = inst[2:0];
 
     // Arithmetic 14
     wire inst_add,   inst_addi,  inst_addu,  inst_addiu;
@@ -274,8 +286,6 @@ module ID(
                       op_and, op_nor, op_or, op_xor,
                       op_sll, op_srl, op_sra, op_lui };
 
-
-
     // load and store enable
     assign data_ram_en =  inst_lb | inst_lbu | inst_lh | inst_lhu 
                         | inst_lw | inst_sb  | inst_sh | inst_sw;
@@ -329,8 +339,8 @@ module ID(
         rf_we,          // 70
         rf_waddr,       // 69:65
         sel_rf_res,     // 64
-        rdata1,         // 63:32
-        rdata2          // 31:0
+        rf_rdata1,      // 63:32
+        rf_rdata2       // 31:0
     };
 
     // Branch-Instruction

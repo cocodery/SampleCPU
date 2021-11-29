@@ -30,6 +30,12 @@ module mycpu_core(
     wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus;
     wire [`StallBus-1:0] stall;
 
+    wire sel_rs_forward;
+    wire sel_rt_forward;
+
+    wire [31:0] rs_forward_data;
+    wire [31:0] rt_forward_data;
+
     IF u_IF(
     	.clk             (clk             ),
         .rst             (rst             ),
@@ -53,6 +59,24 @@ module mycpu_core(
         .wb_to_rf_bus    (wb_to_rf_bus    ),
         .id_to_ex_bus    (id_to_ex_bus    ),
         .br_bus          (br_bus          )
+    );
+
+    FORWARD u_forward(
+        .clk             (clk             ),
+        .rst             (rst             ),
+        .flush           (flush           ),
+        .stall           (stall           ),
+
+        .if_to_id_bus    (if_to_id_bus    ),
+
+        .ex_to_mem_bus   (ex_to_mem_bus   ),
+        .mem_to_wb_bus   (mem_to_wb_bus   ),
+
+        .sel_rs_forward  (sel_rs_forward  ),
+        .sel_rt_forward  (sel_rt_forward  ),
+
+        .rs_forward_data(rs_forward_data  ),
+        .rt_forward_data(rt_forward_data  )
     );
 
     EX u_EX(
