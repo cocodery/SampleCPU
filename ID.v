@@ -30,7 +30,7 @@ module ID(
     wire [4:0]  wb_rf_waddr;
     wire [31:0] wb_rf_wdata;
 
-    wire [31:0] rf_rdata1, rf_rdata2
+    wire [31:0] rf_rdata1, rf_rdata2;
 
     always @ (posedge clk) begin
         if (rst) begin

@@ -59,7 +59,7 @@ module mycpu_core(
 
     wire stall_for_load;
 
-    FORWARD u_forward(
+    FORWARD u_FORWARD(
         .clk               (clk             ),
         .rst               (rst             ),
         //.flush             (flush           ),
@@ -85,6 +85,13 @@ module mycpu_core(
         .rst             (rst             ),
         .stall           (stall           ),
         .id_to_ex_bus    (id_to_ex_bus    ),
+
+        .sel_rs_forward  (sel_rs_forward  ),
+        .sel_rt_forward  (sel_rt_forward  ),
+
+        .rs_forward_data (rs_forward_data ),
+        .rt_forward_data (rt_forward_data ),
+
         .ex_to_mem_bus   (ex_to_mem_bus   ),
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),

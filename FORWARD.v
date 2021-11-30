@@ -11,12 +11,11 @@ module FORWARD(
     input wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
     input wire [`MEM_TO_WB_WD-1:0] mem_to_wb_bus,
 
-    //input wire 
     output reg sel_rs_forward_r,
     output reg sel_rt_forward_r,
 
     output reg [31:0] rs_forward_data_r,
-    output reg [31:0] rt_forward_data_r
+    output reg [31:0] rt_forward_data_r,
 
     output wire stall_for_load
 );
@@ -65,7 +64,7 @@ module FORWARD(
                              32'b0;
     
     assign ex_is_load = ex_ram_ctrl[4] & ~(|ex_ram_ctrl[3:0]);
-    assign stall_for_load = (ex_is_load & (rs_ex_ok|rt_ex_ok)));
+    assign stall_for_load = (ex_is_load & (rs_ex_ok|rt_ex_ok));
 
     always @ (posedge clk) begin
         if (rst) begin
