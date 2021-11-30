@@ -63,8 +63,8 @@ module mycpu_core(
         .flush             (flush           ),
         .stall             (stall           ),
 
-        .rs_rf_raddr     (rs_rf_raddr     ),
-        .rt_rf_raddr     (rt_rf_raddr     )
+        .rs_rf_raddr     (rs_rf_raddr       ),
+        .rt_rf_raddr     (rt_rf_raddr       ),
 
         .ex_to_mem_bus     (ex_to_mem_bus   ),
         .mem_to_wb_bus     (mem_to_wb_bus   ),
