@@ -15,7 +15,10 @@ module ID(
 
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
-    output wire [`BR_WD-1:0] br_bus 
+    output wire [`BR_WD-1:0] br_bus,
+
+    output wire [4:0] rs_rf_raddr,
+    output wire [4:0] rt_rf_raddr
 );
 
     reg [`IF_TO_ID_WD-1:0] if_to_id_bus_r;
@@ -115,6 +118,9 @@ module ID(
     assign base        = inst[25:21];
     assign offset      = inst[15:0];
     assign sel         = inst[2:0];
+
+    assign rs_rf_raddr = rs;
+    assign rt_rf_raddr = rt;
 
     // Arithmetic 14
     wire inst_add,   inst_addi,  inst_addu,  inst_addiu;
