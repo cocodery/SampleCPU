@@ -57,14 +57,16 @@ module mycpu_core(
         .rt_rf_raddr     (rt_rf_raddr     )
     );
 
+    wire stall_for_load;
+
     FORWARD u_forward(
         .clk               (clk             ),
         .rst               (rst             ),
-        .flush             (flush           ),
+        //.flush             (flush           ),
         .stall             (stall           ),
 
-        .rs_rf_raddr     (rs_rf_raddr       ),
-        .rt_rf_raddr     (rt_rf_raddr       ),
+        .rs_rf_raddr       (rs_rf_raddr     ),
+        .rt_rf_raddr       (rt_rf_raddr     ),
 
         .ex_to_mem_bus     (ex_to_mem_bus   ),
         .mem_to_wb_bus     (mem_to_wb_bus   ),
@@ -73,7 +75,9 @@ module mycpu_core(
         .sel_rt_forward_r  (sel_rt_forward  ),
 
         .rs_forward_data_r (rs_forward_data ),
-        .rt_forward_data_r (rt_forward_data )
+        .rt_forward_data_r (rt_forward_data ),
+
+        .stall_for_load    (stall_for_load  )
     );
 
     EX u_EX(
@@ -110,8 +114,9 @@ module mycpu_core(
     );
 
     CTRL u_CTRL(
-    	.rst   (rst   ),
-        .stall (stall )
+    	.rst            (rst           ),
+        .stall_for_load (stall_for_load),
+        .stall          (stall         )
     );
     
 endmodule
