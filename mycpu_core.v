@@ -52,32 +52,7 @@ module mycpu_core(
         .inst_sram_rdata (inst_sram_rdata ),
         .wb_to_rf_bus    (wb_to_rf_bus    ),
         .id_to_ex_bus    (id_to_ex_bus    ),
-        .br_bus          (br_bus          ),
-        .rs_rf_raddr     (rs_rf_raddr     ),
-        .rt_rf_raddr     (rt_rf_raddr     )
-    );
-
-    wire stall_for_load;
-
-    FORWARD u_FORWARD(
-        .clk               (clk             ),
-        .rst               (rst             ),
-        //.flush             (flush           ),
-        .stall             (stall           ),
-
-        .rs_rf_raddr       (rs_rf_raddr     ),
-        .rt_rf_raddr       (rt_rf_raddr     ),
-
-        .ex_to_mem_bus     (ex_to_mem_bus   ),
-        .mem_to_wb_bus     (mem_to_wb_bus   ),
-
-        .sel_rs_forward_r  (sel_rs_forward  ),
-        .sel_rt_forward_r  (sel_rt_forward  ),
-
-        .rs_forward_data_r (rs_forward_data ),
-        .rt_forward_data_r (rt_forward_data ),
-
-        .stall_for_load    (stall_for_load  )
+        .br_bus          (br_bus          )
     );
 
     EX u_EX(
@@ -85,13 +60,6 @@ module mycpu_core(
         .rst             (rst             ),
         .stall           (stall           ),
         .id_to_ex_bus    (id_to_ex_bus    ),
-
-        .sel_rs_forward  (sel_rs_forward  ),
-        .sel_rt_forward  (sel_rt_forward  ),
-
-        .rs_forward_data (rs_forward_data ),
-        .rt_forward_data (rt_forward_data ),
-
         .ex_to_mem_bus   (ex_to_mem_bus   ),
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),
@@ -121,9 +89,8 @@ module mycpu_core(
     );
 
     CTRL u_CTRL(
-    	.rst            (rst           ),
-        .stall_for_load (stall_for_load),
-        .stall          (stall         )
+    	.rst   (rst   ),
+        .stall (stall )
     );
     
 endmodule
