@@ -9,6 +9,11 @@ module EX(
 
     output wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
 
+    input wire sel_rs_forward,
+    input wire [31:0] rs_forward_data,
+    input wire sel_rt_forward,
+    input wire [31:0] rt_forward_data,
+
     output wire data_sram_en,
     output wire [3:0] data_sram_wen,
     output wire [31:0] data_sram_addr,

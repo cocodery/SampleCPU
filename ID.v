@@ -15,6 +15,9 @@ module ID(
 
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
+    output wire [4:0] rs_rf_raddr,
+    output wire [4:0] rt_rf_raddr,
+
     output wire [`BR_WD-1:0] br_bus 
 );
 
@@ -103,6 +106,9 @@ module ID(
     assign base = inst[25:21];
     assign offset = inst[15:0];
     assign sel = inst[2:0];
+
+    assign rs_rf_raddr = rs;
+    assign rt_rf_raddr = rt;
 
     wire inst_ori, inst_lui, inst_addiu, inst_beq;
 
