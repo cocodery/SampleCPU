@@ -2,7 +2,7 @@
 module FORWARD(
     input wire clk,
     input wire rst,
-    input wire flush,
+    //input wire flush,
     input wire [`StallBus-1:0] stall,
     
     input wire [4:0] rs_rf_raddr,

@@ -36,7 +36,7 @@ module alu(
     wire [31:0] lui_result;
 
     assign and_result = alu_src1 & alu_src2;
-    assign or_result = alu_src1 | alu_src2;
+    assign or_result  = alu_src1 | alu_src2;
     assign nor_result = ~or_result;
     assign xor_result = alu_src1 ^ alu_src2;
     assign lui_result = {alu_src2[15:0], 16'b0};
@@ -65,7 +65,7 @@ module alu(
     assign srl_result = alu_src2 >> alu_src1[4:0];
     assign sra_result = ($signed(alu_src2)) >>> alu_src1[4:0];
 
-    assign alu_result = ({32{op_add|op_sub  }} & add_sub_result)
+    assign alu_result = ({32{op_add | op_sub}} & add_sub_result)
                       | ({32{op_slt         }} & slt_result)
                       | ({32{op_sltu        }} & sltu_result)
                       | ({32{op_and         }} & and_result)
