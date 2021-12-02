@@ -45,7 +45,6 @@ module mycpu_core(
     wire [4:0] rs_rf_raddr;
     wire [4:0] rt_rf_raddr;
     
-
     ID u_ID(
     	.clk             (clk             ),
         .rst             (rst             ),

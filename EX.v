@@ -49,6 +49,9 @@ module EX(
     wire [31:0] rf_rdata1, rf_rdata2;
     reg is_in_delayslot;
 
+    wire [31:0] rf_rdata1_fd;
+    wire [31:0] rf_rdata2_fd;
+
     assign {
         ex_pc,          // 148:117
         inst,           // 116:85
@@ -72,12 +75,20 @@ module EX(
     wire [31:0] alu_src1, alu_src2;
     wire [31:0] alu_result, ex_result;
 
+    assign rf_rdata1_fd = sel_rs_forward ? rs_forward_data : rf_rdata1;
+    assign rf_rdata2_fd = sel_rt_forward ? rt_forward_data : rf_rdata2;
+
+
     assign alu_src1 = sel_alu_src1[1] ? ex_pc :
-                      sel_alu_src1[2] ? sa_zero_extend : rf_rdata1;
+                      sel_alu_src1[2] ? sa_zero_extend :
+                      sel_rs_forward  ? rs_forward_data:
+                      rf_rdata1;
 
     assign alu_src2 = sel_alu_src2[1] ? imm_sign_extend :
-                      sel_alu_src2[2] ? 32'd8 :
-                      sel_alu_src2[3] ? imm_zero_extend : rf_rdata2;
+                      sel_alu_src2[2] ? 32'd8           :
+                      sel_alu_src2[3] ? imm_zero_extend :
+                      sel_rt_forward  ? rt_forward_data :
+                      rf_rdata2;
     
     alu u_alu(
     	.alu_control (alu_op ),
