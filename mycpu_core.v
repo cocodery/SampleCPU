@@ -44,7 +44,6 @@ module mycpu_core(
 
     wire [4:0] rs_rf_raddr;
     wire [4:0] rt_rf_raddr;
-    wire [11:0] br_op;
     
     ID u_ID(
     	.clk             (clk             ),
@@ -59,7 +58,7 @@ module mycpu_core(
         .rs_rf_raddr     (rs_rf_raddr     ),
         .rt_rf_raddr     (rt_rf_raddr     ),
 
-        .br_op           (br_op           )
+        .br_bus          (br_bus          )
     );
 
     wire stall_for_load;
@@ -104,9 +103,6 @@ module mycpu_core(
         .rs_forward_data (rs_forward_data ),
         .sel_rt_forward  (sel_rt_forward  ),
         .rt_forward_data (rt_forward_data ),
-
-        .br_op           (br_op           ),
-        .br_bus          (br_bus          ),
 
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),
