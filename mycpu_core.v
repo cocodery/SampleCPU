@@ -42,37 +42,12 @@ module mycpu_core(
         .inst_sram_wdata (inst_sram_wdata )
     );
 
-    wire [4:0] rs_rf_raddr;
-    wire [4:0] rt_rf_raddr;
-    
     ID u_ID(
-    	.clk             (clk             ),
-        .rst             (rst             ),
-        .stall           (stall           ),
-        .stallreq        (stallreq        ),
-        .if_to_id_bus    (if_to_id_bus    ),
-        .inst_sram_rdata (inst_sram_rdata ),
-        .wb_to_rf_bus    (wb_to_rf_bus    ),
-        .id_to_ex_bus    (id_to_ex_bus    ),
-
-        .rs_rf_raddr     (rs_rf_raddr     ),
-        .rt_rf_raddr     (rt_rf_raddr     ),
-
-        .br_bus          (br_bus          )
-    );
-
-    wire stall_for_load;
-    wire sel_rs_forward;
-    wire sel_rt_forward;
-    wire [31:0] rs_forward_data;
-    wire [31:0] rt_forward_data;
-
-    FORWARD u_FORWARD(
-        .clk             (clk                 ),
+    	.clk             (clk                 ),
         .rst             (rst                 ),
         .stall           (stall               ),
-        .rs_rf_raddr     (rs_rf_raddr         ),
-        .rt_rf_raddr     (rt_rf_raddr         ),
+        .stallreq        (stallreq            ),
+        .if_to_id_bus    (if_to_id_bus        ),
 
         .ex_we           (ex_to_mem_bus[37]   ),
         .ex_waddr        (ex_to_mem_bus[36:32]),
@@ -83,13 +58,11 @@ module mycpu_core(
         .mem_waddr       (mem_to_wb_bus[36:32]),
         .mem_wdata       (mem_to_wb_bus[31:0] ),
 
-        .sel_rs_forward (sel_rs_forward       ),
-        .rs_forward_data(rs_forward_data      ),
+        .inst_sram_rdata (inst_sram_rdata     ),
+        .wb_to_rf_bus    (wb_to_rf_bus        ),
+        .id_to_ex_bus    (id_to_ex_bus        ),
 
-        .sel_rt_forward (sel_rt_forward       ),
-        .rt_forward_data(rt_forward_data      ),
-
-        .stall_for_load (stall_for_load       )
+        .br_bus          (br_bus              )
     );
 
     EX u_EX(
@@ -98,11 +71,6 @@ module mycpu_core(
         .stall           (stall           ),
         .id_to_ex_bus    (id_to_ex_bus    ),
         .ex_to_mem_bus   (ex_to_mem_bus   ),
-
-        .sel_rs_forward  (sel_rs_forward  ),
-        .rs_forward_data (rs_forward_data ),
-        .sel_rt_forward  (sel_rt_forward  ),
-        .rt_forward_data (rt_forward_data ),
 
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),

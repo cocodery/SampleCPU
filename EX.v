@@ -9,11 +9,6 @@ module EX(
 
     output wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
 
-    input wire sel_rs_forward,
-    input wire [31:0] rs_forward_data,
-    input wire sel_rt_forward,
-    input wire [31:0] rt_forward_data,
-
     output wire data_sram_en,
     output wire [3:0] data_sram_wen,
     output wire [31:0] data_sram_addr,
@@ -63,8 +58,8 @@ module EX(
         rf_we,          // 70
         rf_waddr,       // 69:65
         sel_rf_res,     // 64
-        rf_rdata1,         // 63:32
-        rf_rdata2          // 31:0
+        rf_rdata1,      // 63:32
+        rf_rdata2       // 31:0
     } = id_to_ex_bus_r;
 
     wire [31:0] imm_sign_extend, imm_zero_extend, sa_zero_extend;
@@ -75,19 +70,13 @@ module EX(
     wire [31:0] alu_src1, alu_src2;
     wire [31:0] alu_result, ex_result;
 
-    assign rf_rdata1_fd = sel_rs_forward ? rs_forward_data : rf_rdata1;
-    assign rf_rdata2_fd = sel_rt_forward ? rt_forward_data : rf_rdata2;
-
-
     assign alu_src1 = sel_alu_src1[1] ? ex_pc :
                       sel_alu_src1[2] ? sa_zero_extend :
-                      sel_rs_forward  ? rs_forward_data:
                       rf_rdata1;
 
     assign alu_src2 = sel_alu_src2[1] ? imm_sign_extend :
                       sel_alu_src2[2] ? 32'd8           :
                       sel_alu_src2[3] ? imm_zero_extend :
-                      sel_rt_forward  ? rt_forward_data :
                       rf_rdata2;
     
     alu u_alu(
