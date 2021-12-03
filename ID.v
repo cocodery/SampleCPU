@@ -18,7 +18,7 @@ module ID(
     output wire [4:0] rs_rf_raddr,
     output wire [4:0] rt_rf_raddr,
 
-    output wire [`BR_WD-1:0] br_bus 
+    output wire [11:0] br_op
 );
 
     reg [`IF_TO_ID_WD-1:0] if_to_id_bus_r;
@@ -320,7 +320,22 @@ module ID(
                     | {5{sel_rf_dst[2]}} & 32'd31;
 
     // 0 from alu_res ; 1 from ld_res
-    assign sel_rf_res = 1'b0; 
+    assign sel_rf_res = inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu;
+
+    assign br_op = {
+        inst_beq,
+        inst_bne,
+        inst_bgez,
+        inst_bgtz,
+        inst_blez,
+        inst_bltz,
+        inst_bgezal,
+        inst_bltzal,
+        inst_j,
+        inst_jal,
+        inst_jr,
+        inst_jalr
+    };
 
     assign id_to_ex_bus = {
         id_pc,          // 158:127
@@ -335,27 +350,6 @@ module ID(
         sel_rf_res,     // 64
         rdata1,         // 63:32
         rdata2          // 31:0
-    };
-
-
-    wire br_e;
-    wire [31:0] br_addr;
-    wire rs_eq_rt;
-    wire rs_ge_z;
-    wire rs_gt_z;
-    wire rs_le_z;
-    wire rs_lt_z;
-    wire [31:0] pc_plus_4;
-    assign pc_plus_4 = id_pc + 32'h4;
-
-    assign rs_eq_rt = (rdata1 == rdata2);
-
-    assign br_e = inst_beq & rs_eq_rt;
-    assign br_addr = inst_beq ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0;
-
-    assign br_bus = {
-        br_e,
-        br_addr
     };
     
 

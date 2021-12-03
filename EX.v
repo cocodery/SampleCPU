@@ -14,6 +14,9 @@ module EX(
     input wire sel_rt_forward,
     input wire [31:0] rt_forward_data,
 
+    input wire [11:0] br_op,
+    output wire [`BR_WD-1:0] br_bus,
+
     output wire data_sram_en,
     output wire [3:0] data_sram_wen,
     output wire [31:0] data_sram_addr,
@@ -108,6 +111,55 @@ module EX(
         rf_waddr,       // 36:32
         ex_result       // 31:0
     };
+
+    //Branch Part
+    wire inst_beq,  inst_bne,   inst_bgez,  inst_bgtz;
+    wire inst_blez, inst_bltz,  inst_bltzal,inst_bgezal;
+    wire inst_j,    inst_jal,   inst_jr,    inst_jalr; 
+
+    assign {
+        inst_beq,
+        inst_bne,
+        inst_bgez,
+        inst_bgtz,
+        inst_blez,
+        inst_bltz,
+        inst_bgezal,
+        inst_bltzal,
+        inst_j,
+        inst_jal,
+        inst_jr,
+        inst_jalr
+    } = br_op;
+
+    wire br_e;
+    wire [31:0] br_addr;
+    wire rs_eq_rt;
+    wire rs_ge_z;
+    wire rs_gt_z;
+    wire rs_le_z;
+    wire rs_lt_z;
+    wire [31:0] pc_plus_4;
+    assign pc_plus_4 = ex_pc + 32'h4;
+
+    assign rs_eq_rt = (rf_rdata1_fd == rf_rdata2_fd);
+    assign rs_ge_z  = ~rf_rdata1_fd[31];
+    assign rs_gt_z  = ($signed(rf_rdata1_fd) > 0);
+    assign rs_le_z  = (rf_rdata1_fd[31]==1'b1 || rf_rdata1_fd == 32'b0);
+    assign rs_lt_z  = (rf_rdata1_fd[31]);
+
+    assign br_e    =  inst_beq & rs_eq_rt
+                    | inst_jr;
+
+    assign br_addr =  inst_beq ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) 
+                    : inst_jr  ? rf_rdata1_fd
+                    : 32'b0;
+
+    assign br_bus = {
+        br_e,
+        br_addr
+    };
+
 /*
     // MUL part
     wire [63:0] mul_result;
