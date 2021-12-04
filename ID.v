@@ -95,19 +95,30 @@ module ID(
     wire [31:0] rs_forward_data;
     wire [31:0] rt_forward_data;
 
+    wire [31:0] rf_rdata1;
+    wire [31:0] rf_rdata2;
+
     wire [31:0] rdata1_fd;
     wire [31:0] rdata2_fd;
 
     regfile u_regfile(
-    	.clk    (clk    ),
-        .raddr1 (rs ),
-        .rdata1 (rdata1 ),
-        .raddr2 (rt ),
-        .rdata2 (rdata2 ),
+    	.clk    (clk          ),
+        .raddr1 (rs           ),
+        .rdata1 (rdata1       ),
+        .raddr2 (rt           ),
+        .rdata2 (rdata2       ),
         .we     (wb_rf_we     ),
         .waddr  (wb_rf_waddr  ),
         .wdata  (wb_rf_wdata  )
     );
+
+    wire sel_r1_wdata;
+    wire sel_r2_wdata;
+    assign sel_r1_wdata = wb_rf_we & (wb_rf_waddr == rs);
+    assign sel_r2_wdata = wb_rf_we & (wb_rf_waddr == rt);
+
+    assign rf_rdata1 = sel_r1_wdata ? wb_rf_wdata : rdata1;
+    assign rf_rdata2 = sel_r2_wdata ? wb_rf_wdata : rdata2;
 
     assign opcode      = inst[31:26];
     assign rs          = inst[25:21];
@@ -345,8 +356,8 @@ module ID(
                              rt_mem_ok ? mem_wdata:
                              32'b0;
 
-    assign rdata1_fd = sel_rs_forward ? rs_forward_data : rdata1;
-    assign rdata2_fd = sel_rt_forward ? rt_forward_data : rdata2;
+    assign rdata1_fd = sel_rs_forward ? rs_forward_data : rf_rdata1;
+    assign rdata2_fd = sel_rt_forward ? rt_forward_data : rf_rdata2;
 
     assign id_to_ex_bus = {
         id_pc,          // 158:127

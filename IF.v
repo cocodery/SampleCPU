@@ -41,6 +41,9 @@ module IF(
         if (rst) begin
             ce_reg <= 1'b0;
         end
+        else if (br_e) begin
+            ce_reg <= 1'b1;
+        end
         else if (stall[0]==`NoStop) begin
             ce_reg <= 1'b1;
         end
