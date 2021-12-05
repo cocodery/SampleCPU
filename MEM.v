@@ -5,6 +5,7 @@ module MEM(
     // input wire flush,
     input wire [`StallBus-1:0] stall,
 
+    input wire [4:0] mem_op,
     input wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
     input wire [31:0] data_sram_rdata,
 
@@ -48,7 +49,115 @@ module MEM(
         ex_result       // 31:0
     } =  ex_to_mem_bus_r;
 
+    wire inst_lb, inst_lbu, inst_lh, inst_lhu, inst_lw;
 
+    assign {
+        inst_lb,
+        inst_lbu, 
+        inst_lh, 
+        inst_lhu, 
+        inst_lw
+    } = mem_op;
+
+    //Load Data
+    reg [31:0] mem_result_r;
+    always @ (*) begin
+        case(1'b1)
+            inst_lb:
+            begin
+                case(ex_result[1:0])
+                    2'b00:
+                    begin
+                        mem_result_r = {{24{data_sram_rdata[7]}},data_sram_rdata[7:0]};
+                    end
+                    2'b01:
+                    begin
+                        mem_result_r = {{24{data_sram_rdata[15]}},data_sram_rdata[15:8]};
+                    end
+                    2'b10:
+                    begin
+                        mem_result_r = {{24{data_sram_rdata[23]}},data_sram_rdata[23:16]};
+                    end
+                    2'b11:
+                    begin
+                        mem_result_r = {{24{data_sram_rdata[31]}},data_sram_rdata[31:24]};
+                    end
+                    default:
+                    begin
+                        mem_result_r = 32'b0;
+                    end
+                endcase
+            end
+            inst_lbu:
+            begin
+                case(ex_result[1:0])
+                    2'b00:
+                    begin
+                        mem_result_r = {{24{1'b0}},data_sram_rdata[7:0]};
+                    end
+                    2'b01:
+                    begin
+                        mem_result_r = {{24{1'b0}},data_sram_rdata[15:8]};
+                    end
+                    2'b10:
+                    begin
+                        mem_result_r = {{24{1'b0}},data_sram_rdata[23:16]};
+                    end
+                    2'b11:
+                    begin
+                        mem_result_r = {{24{1'b0}},data_sram_rdata[31:24]};
+                    end
+                    default:
+                    begin
+                        mem_result_r = 32'b0;
+                    end
+                endcase
+            end
+            inst_lh:
+            begin
+                case(ex_result[1:0])
+                    2'b00:
+                    begin
+                        mem_result_r = {{16{data_sram_rdata[15]}},data_sram_rdata[15:0]};
+                    end
+                    
+                    2'b10:
+                    begin
+                        mem_result_r = {{16{data_sram_rdata[31]}},data_sram_rdata[31:16]};
+                    end
+                    default:
+                    begin
+                        mem_result_r = 32'b0;
+                    end
+                endcase
+            end
+            inst_lhu:
+            begin
+                case(ex_result[1:0])
+                    2'b00:
+                    begin
+                        mem_result_r = {{16{1'b0}},data_sram_rdata[15:0]};
+                    end
+                    2'b10:
+                    begin
+                        mem_result_r = {{16{1'b0}},data_sram_rdata[31:16]};
+                    end
+                    default:
+                    begin
+                        mem_result_r = 32'b0;
+                    end
+                endcase
+            end
+            inst_lw:
+            begin
+                mem_result_r = data_sram_rdata;
+            end
+            default:
+            begin
+                mem_result_r = 32'b0;
+            end
+        endcase
+    end
 
     assign rf_wdata = sel_rf_res ? mem_result : ex_result;
 

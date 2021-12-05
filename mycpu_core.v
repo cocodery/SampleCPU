@@ -42,6 +42,8 @@ module mycpu_core(
         .inst_sram_wdata (inst_sram_wdata )
     );
 
+    wire [4:0] mem_op;
+
     ID u_ID(
     	.clk             (clk                 ),
         .rst             (rst                 ),
@@ -60,8 +62,9 @@ module mycpu_core(
 
         .inst_sram_rdata (inst_sram_rdata     ),
         .wb_to_rf_bus    (wb_to_rf_bus        ),
-        .id_to_ex_bus    (id_to_ex_bus        ),
 
+        .mem_op          (mem_op              ),
+        .id_to_ex_bus    (id_to_ex_bus        ),
         .br_bus          (br_bus              )
     );
 
@@ -82,6 +85,8 @@ module mycpu_core(
     	.clk             (clk             ),
         .rst             (rst             ),
         .stall           (stall           ),
+
+        .mem_op          (mem_op          ),
         .ex_to_mem_bus   (ex_to_mem_bus   ),
         .data_sram_rdata (data_sram_rdata ),
         .mem_to_wb_bus   (mem_to_wb_bus   )

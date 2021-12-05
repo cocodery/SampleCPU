@@ -22,6 +22,8 @@ module ID(
 
     input wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus,
 
+    output wire [4:0] mem_op,
+
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
     output wire [`BR_WD-1:0] br_bus 
@@ -296,7 +298,7 @@ module ID(
                      op_and, op_nor, op_or, op_xor,
                      op_sll, op_srl, op_sra, op_lui};
 
-
+    assign mem_op = {inst_lb, inst_lbu, inst_lh, inst_lhu, inst_lw};
 
     // load and store enable
     assign data_ram_en =  inst_lb | inst_lbu | inst_lh | inst_lhu 
@@ -328,7 +330,7 @@ module ID(
                          | inst_lbu   | inst_lh    | inst_lhu  | inst_lui 
                          | inst_ori   | inst_andi  | inst_xori | inst_slti 
                          | inst_sltiu | inst_mfc0;
-    // store in [31]
+    // store in [31] PC
     assign sel_rf_dst[2] = inst_jal | inst_bltzal | inst_bgezal | inst_jalr;
 
     // sel for regfile address
