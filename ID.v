@@ -2,7 +2,7 @@
 module ID(
     input wire clk,
     input wire rst,
-    // input wire flush,
+    input wire flush,
     input wire [`StallBus-1:0] stall,
     
     output wire stallreq,
@@ -24,12 +24,15 @@ module ID(
 
     output wire [4:0] mem_op,
 
+    output wire stall_for_load,
+
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
     output wire [`BR_WD-1:0] br_bus 
 );
 
     reg [`IF_TO_ID_WD-1:0] if_to_id_bus_r;
+    wire stall_for_load_r;
     wire [31:0] inst;
     wire [31:0] id_pc;
     wire ce;
@@ -40,11 +43,11 @@ module ID(
 
     always @ (posedge clk) begin
         if (rst) begin
-            if_to_id_bus_r <= `IF_TO_ID_WD'b0;        
+            if_to_id_bus_r <= `IF_TO_ID_WD'b0;
         end
-        // else if (flush) begin
-        //     ic_to_id_bus <= `IC_TO_ID_WD'b0;
-        // end
+        else if (flush) begin
+            if_to_id_bus_r <= `IF_TO_ID_WD'b0;
+        end
         else if (stall[1]==`Stop && stall[2]==`NoStop) begin
             if_to_id_bus_r <= `IF_TO_ID_WD'b0;
         end
@@ -92,6 +95,7 @@ module ID(
     wire [31:0] rdata1, rdata2;
     
     wire rs_ex_ok, rt_ex_ok;
+    wire rs_mem_ok, rt_mem_ok;
     wire sel_rs_forward;
     wire sel_rt_forward;
     wire [31:0] rs_forward_data;
@@ -102,6 +106,8 @@ module ID(
 
     wire [31:0] rdata1_fd;
     wire [31:0] rdata2_fd;
+
+    wire ex_is_load;
 
     regfile u_regfile(
     	.clk    (clk          ),
@@ -158,22 +164,22 @@ module ID(
     wire op_sll, op_srl, op_sra, op_lui;
 
     decoder_6_64 u0_decoder_6_64(
-    	.in  (opcode  ),
-        .out (op_d )
+    	.in  (opcode),
+        .out (op_d  )
     );
 
     decoder_6_64 u1_decoder_6_64(
-    	.in  (func  ),
+    	.in  (func   ),
         .out (func_d )
     );
     
     decoder_5_32 u0_decoder_5_32(
-    	.in  (rs  ),
+    	.in  (rs   ),
         .out (rs_d )
     );
 
     decoder_5_32 u1_decoder_5_32(
-    	.in  (rt  ),
+    	.in  (rt   ),
         .out (rt_d )
     );
 
@@ -339,7 +345,7 @@ module ID(
                     | {5{sel_rf_dst[2]}} & 32'd31;
 
     // 0 from alu_res ; 1 from ld_res
-    assign sel_rf_res = inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu;; 
+    assign sel_rf_res = inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu;
 
     assign rs_ex_ok =  (rs == ex_waddr)  &&  ex_we ? 1'b1 : 1'b0;
     assign rt_ex_ok =  (rt == ex_waddr)  &&  ex_we ? 1'b1 : 1'b0;
@@ -360,6 +366,10 @@ module ID(
 
     assign rdata1_fd = sel_rs_forward ? rs_forward_data : rf_rdata1;
     assign rdata2_fd = sel_rt_forward ? rt_forward_data : rf_rdata2;
+
+    assign ex_is_load = ex_ram_ctrl[4] & ~(|ex_ram_ctrl[3:0]);
+    assign stall_for_load_r = ex_is_load & (rs_ex_ok | rt_ex_ok);
+    assign stall_for_load = stall_for_load_r;
 
     assign id_to_ex_bus = {
         id_pc,          // 158:127

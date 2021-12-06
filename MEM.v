@@ -2,7 +2,7 @@
 module MEM(
     input wire clk,
     input wire rst,
-    // input wire flush,
+    input wire flush,
     input wire [`StallBus-1:0] stall,
 
     input wire [4:0] mem_op,
@@ -18,9 +18,9 @@ module MEM(
         if (rst) begin
             ex_to_mem_bus_r <= `EX_TO_MEM_WD'b0;
         end
-        // else if (flush) begin
-        //     ex_to_mem_bus_r <= `EX_TO_MEM_WD'b0;
-        // end
+        else if (flush) begin
+            ex_to_mem_bus_r <= `EX_TO_MEM_WD'b0;
+        end
         else if (stall[3]==`Stop && stall[4]==`NoStop) begin
             ex_to_mem_bus_r <= `EX_TO_MEM_WD'b0;
         end
@@ -159,7 +159,7 @@ module MEM(
         endcase
     end
 
-    assign rf_wdata = sel_rf_res ? mem_result : ex_result;
+    assign rf_wdata = sel_rf_res ? mem_result_r : ex_result;
 
     assign mem_to_wb_bus = {
         mem_pc,     // 69:38

@@ -2,7 +2,7 @@
 module WB(
     input wire clk,
     input wire rst,
-    // input wire flush,
+    input wire flush,
     input wire [`StallBus-1:0] stall,
 
     input wire [`MEM_TO_WB_WD-1:0] mem_to_wb_bus,
@@ -21,9 +21,9 @@ module WB(
         if (rst) begin
             mem_to_wb_bus_r <= `MEM_TO_WB_WD'b0;
         end
-        // else if (flush) begin
-        //     mem_to_wb_bus_r <= `MEM_TO_WB_WD'b0;
-        // end
+        else if (flush) begin
+            mem_to_wb_bus_r <= `MEM_TO_WB_WD'b0;
+        end
         else if (stall[4]==`Stop && stall[5]==`NoStop) begin
             mem_to_wb_bus_r <= `MEM_TO_WB_WD'b0;
         end

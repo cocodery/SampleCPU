@@ -4,8 +4,8 @@ module IF(
     input wire rst,
     input wire [`StallBus-1:0] stall,
 
-    // input wire flush,
-    // input wire [31:0] new_pc,
+    input wire flush,
+    input wire [31:0] new_pc,
 
     input wire [`BR_WD-1:0] br_bus,
 
@@ -50,8 +50,9 @@ module IF(
     end
 
 
-    assign next_pc = br_e ? br_addr 
-                   : pc_reg + 32'h4;
+    assign next_pc = //flush ? new_pc :
+                     br_e ? br_addr :
+                     pc_reg + 32'h4;
 
     
     assign inst_sram_en = ce_reg;
