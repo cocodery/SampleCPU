@@ -31,6 +31,7 @@ module mycpu_core(
     wire [`StallBus-1:0] stall;
     wire flush;
     wire [31:0] new_pc;
+    wire stall_en;
 
     IF u_IF(
     	.clk             (clk             ),
@@ -56,7 +57,7 @@ module mycpu_core(
         .ex_we           (ex_to_mem_bus[37]   ),
         .ex_waddr        (ex_to_mem_bus[36:32]),
         .ex_wdata        (ex_to_mem_bus[31:0] ),
-        .ex_ram_read     (ex_to_mem_bus[43]   ),
+        .ex_ram_read     (ex_to_mem_bus[38]   ),
 
         .mem_we          (mem_to_wb_bus[37]   ),
         .mem_waddr       (mem_to_wb_bus[36:32]),

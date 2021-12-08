@@ -91,10 +91,77 @@ module EX(
     assign ex_result = alu_result;
 
     //Store Part
+    wire inst_sb, inst_sh, inst_sw;
+    reg [3:0] data_sram_wen_r;
+    reg [31:0] data_sram_wdata_r;
+
+    assign {
+        inst_sb, 
+        inst_sh,
+        inst_sw
+    } = data_ram_wen[2:0];
+
+    always @ (*) begin
+        case(1'b1)
+            inst_sb:
+            begin
+                data_sram_wdata_r <= {4{rf_rdata2[7:0]}};
+                case(alu_result[1:0])
+                    2'b00:
+                    begin
+                        data_sram_wen_r <= 4'b0001;
+                    end
+                    2'b01:
+                    begin
+                        data_sram_wen_r <= 4'b0010;
+                    end
+                    2'b10:
+                    begin
+                        data_sram_wen_r <= 4'b0100;
+                    end
+                    2'b11:
+                    begin
+                        data_sram_wen_r <= 4'b1000;
+                    end
+                    default:
+                    begin
+                        data_sram_wen_r <= 4'b0;
+                    end
+                endcase
+            end
+            inst_sh:
+            begin
+                data_sram_wdata_r <= {2{rf_rdata2[15:0]}};
+                case(alu_result[1:0])
+                    2'b00:
+                    begin
+                        data_sram_wen_r <= 4'b0011;
+                    end
+                    2'b10:
+                    begin
+                        data_sram_wen_r <= 4'b1100;
+                    end
+                    default:
+                    begin
+                        data_sram_wen_r <= 4'b0000;
+                    end
+                endcase
+            end
+            inst_sw:begin
+                data_sram_wdata_r <= rf_rdata2;
+                data_sram_wen_r <= 4'b1111;
+            end
+            default:begin
+                data_sram_wdata_r = 32'b0;
+                data_sram_wen_r = 4'b0000;
+            end
+        endcase
+    end
+
     assign data_sram_en = data_ram_en;
-    assign data_sram_wen = (data_ram_wen == 4'b1111) ? 4'b1111: 4'b0000;
+    assign data_sram_wen = data_sram_wen_r;
     assign data_sram_addr = alu_result; 
-    assign data_sram_wdata = (data_ram_wen == 4'b1111) ? rf_rdata2: 32'b0;
+    assign data_sram_wdata = data_sram_wdata_r;
 
     assign ex_to_mem_bus = {
         mem_op,         // 80:76

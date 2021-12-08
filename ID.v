@@ -317,7 +317,7 @@ module ID(
                         | inst_lw | inst_sb  | inst_sh | inst_sw;
 
     // write enable
-    assign data_ram_wen = {1'b0,inst_sb,inst_sh,inst_sw};
+    assign data_ram_wen = {1'b0, inst_sb, inst_sh, inst_sw};
 
     // regfile store enable
     assign rf_we = inst_add    | inst_addu   | inst_addi  | inst_addiu 
