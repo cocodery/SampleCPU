@@ -15,7 +15,7 @@ module CTRL(
             new_pc <= 32'b0;
         end
         else if (stall_for_load) begin
-            stall  <= `StallBus'b000001;
+            stall  <= `StallBus'b00_0111;
             flush  <= 1'b0;
             new_pc <= 32'b0;
         end

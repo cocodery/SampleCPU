@@ -14,15 +14,13 @@ module ID(
     input wire ex_we,
     input wire [4:0] ex_waddr,
     input wire [31:0] ex_wdata,
-    input wire [4:0] ex_ram_ctrl,
+    input wire ex_ram_read,
 
     input wire mem_we,
     input wire [4:0] mem_waddr,
     input wire [31:0] mem_wdata,
 
     input wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus,
-
-    output wire [4:0] mem_op,
 
     output wire stall_for_load,
 
@@ -32,7 +30,6 @@ module ID(
 );
 
     reg [`IF_TO_ID_WD-1:0] if_to_id_bus_r;
-    wire stall_for_load_r;
     wire [31:0] inst;
     wire [31:0] id_pc;
     wire ce;
@@ -40,23 +37,34 @@ module ID(
     wire wb_rf_we;
     wire [4:0] wb_rf_waddr;
     wire [31:0] wb_rf_wdata;
+    wire [4:0] mem_op;
+
+    reg is_stop;
 
     always @ (posedge clk) begin
         if (rst) begin
             if_to_id_bus_r <= `IF_TO_ID_WD'b0;
+            is_stop <= 1'b0;
         end
         else if (flush) begin
             if_to_id_bus_r <= `IF_TO_ID_WD'b0;
+            is_stop <= 1'b0;
         end
         else if (stall[1]==`Stop && stall[2]==`NoStop) begin
             if_to_id_bus_r <= `IF_TO_ID_WD'b0;
+            is_stop <= 1'b0;
         end
         else if (stall[1]==`NoStop) begin
             if_to_id_bus_r <= if_to_id_bus;
+            is_stop <= 1'b0;
+        end
+        else if (stall[2]==`Stop) begin
+            is_stop <= 1'b1;
         end
     end
-    
-    assign inst = inst_sram_rdata;
+
+    assign inst = is_stop ? inst : inst_sram_rdata;
+
     assign {
         ce,
         id_pc
@@ -106,8 +114,6 @@ module ID(
 
     wire [31:0] rdata1_fd;
     wire [31:0] rdata2_fd;
-
-    wire ex_is_load;
 
     regfile u_regfile(
     	.clk    (clk          ),
@@ -366,12 +372,11 @@ module ID(
 
     assign rdata1_fd = sel_rs_forward ? rs_forward_data : rf_rdata1;
     assign rdata2_fd = sel_rt_forward ? rt_forward_data : rf_rdata2;
-
-    assign ex_is_load = ex_ram_ctrl[4] & ~(|ex_ram_ctrl[3:0]);
-    assign stall_for_load_r = ex_is_load & (rs_ex_ok | rt_ex_ok);
-    assign stall_for_load = stall_for_load_r;
+    
+    assign stall_for_load = ex_ram_read & (rs_ex_ok | rt_ex_ok);
 
     assign id_to_ex_bus = {
+        mem_op,         // 163:159
         id_pc,          // 158:127
         inst,           // 126:95
         alu_op,         // 94:83

@@ -33,6 +33,7 @@ module EX(
     end
 
     wire [31:0] ex_pc, inst;
+    wire [4:0] mem_op;
     wire [11:0] alu_op;
     wire [2:0] sel_alu_src1;
     wire [3:0] sel_alu_src2;
@@ -48,6 +49,7 @@ module EX(
     wire [31:0] rf_rdata2_fd;
 
     assign {
+        mem_op,         // 163:159
         ex_pc,          // 158:127
         inst,           // 126:95
         alu_op,         // 94:83
@@ -88,7 +90,14 @@ module EX(
 
     assign ex_result = alu_result;
 
+    //Store Part
+    assign data_sram_en = data_ram_en;
+    assign data_sram_wen = (data_ram_wen == 4'b1111) ? 4'b1111: 4'b0000;
+    assign data_sram_addr = alu_result; 
+    assign data_sram_wdata = (data_ram_wen == 4'b1111) ? rf_rdata2: 32'b0;
+
     assign ex_to_mem_bus = {
+        mem_op,         // 80:76
         ex_pc,          // 75:44
         data_ram_en,    // 43
         data_ram_wen,   // 42:39
