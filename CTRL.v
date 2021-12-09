@@ -3,7 +3,7 @@ module CTRL(
     input wire rst,
     // input wire stallreq_for_ex,
     input wire stall_for_load,
-
+    input wire stall_for_ex,
     output reg flush,
     output reg [31:0] new_pc,
     output reg [`StallBus-1:0] stall

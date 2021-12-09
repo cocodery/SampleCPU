@@ -32,6 +32,7 @@ module WB(
         end
     end
 
+    wire [65:0] mul_div_to_hilo;
     wire [`HILO_BUS-1:0] hilo_bus;
     wire [31:0] wb_pc;
     wire rf_we;
@@ -39,19 +40,21 @@ module WB(
     wire [31:0] rf_wdata;
 
     assign {
-        hilo_bus,  // 83:70
-        wb_pc,     // 69:38
-        rf_we,     // 37
-        rf_waddr,  // 36:32
-        rf_wdata   // 31:0
+        mul_div_to_hilo, // 149:84
+        hilo_bus,        // 83:70
+        wb_pc,           // 69:38
+        rf_we,           // 37
+        rf_waddr,        // 36:32
+        rf_wdata         // 31:0
     } = mem_to_wb_bus_r;
 
     // assign wb_to_rf_bus = mem_to_wb_bus_r[`WB_TO_RF_WD-1:0];
     assign wb_to_rf_bus = {
-        hilo_bus,   // 51:38
-        rf_we,      // 37
-        rf_waddr,   // 36:32
-        rf_wdata    // 31:0
+        mul_div_to_hilo, // 117:52
+        hilo_bus,        // 51:38
+        rf_we,           // 37
+        rf_waddr,        // 36:32
+        rf_wdata         // 31:0
     };
 
     assign debug_wb_pc = wb_pc;

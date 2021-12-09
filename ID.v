@@ -23,9 +23,8 @@ module ID(
     input wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus,
 
     output wire stall_for_load,
-
+    output wire [8:0] hilo_op,
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
-
     output wire [`BR_WD-1:0] br_bus 
 );
 
@@ -40,7 +39,6 @@ module ID(
     wire [31:0] wb_rf_wdata;
 
     wire [4:0] mem_op;
-    wire [4:0] hilo_op;
     wire [`HILO_BUS-1:0] hilo_bus;
 
     reg is_stop;
@@ -271,6 +269,12 @@ module ID(
         inst_mtlo,
         rs,
         rd
+    };
+
+    assign hilo_op = {
+        inst_mfhi, inst_mflo, inst_mthi, inst_mtlo,
+        inst_mult, inst_multu, inst_div, inst_divu,
+        inst_mul
     };
 
     // rs to reg1  
