@@ -34,10 +34,13 @@ module ID(
     wire [31:0] id_pc;
     wire ce;
 
+    wire [4:0] wb_hilo_op;
     wire wb_rf_we;
     wire [4:0] wb_rf_waddr;
     wire [31:0] wb_rf_wdata;
+
     wire [4:0] mem_op;
+    wire [4:0] hilo_op;
 
     reg is_stop;
 
@@ -69,7 +72,9 @@ module ID(
         ce,
         id_pc
     } = if_to_id_bus_r;
+
     assign {
+        wb_hilo_op,
         wb_rf_we,
         wb_rf_waddr,
         wb_rf_wdata
@@ -116,14 +121,15 @@ module ID(
     wire [31:0] rdata2_fd;
 
     regfile u_regfile(
-    	.clk    (clk          ),
-        .raddr1 (rs           ),
-        .rdata1 (rdata1       ),
-        .raddr2 (rt           ),
-        .rdata2 (rdata2       ),
-        .we     (wb_rf_we     ),
-        .waddr  (wb_rf_waddr  ),
-        .wdata  (wb_rf_wdata  )
+    	.clk     (clk          ),
+        .raddr1  (rs           ),
+        .rdata1  (rdata1       ),
+        .raddr2  (rt           ),
+        .rdata2  (rdata2       ),
+        .hilo_op (wb_hilo_op   ),
+        .we      (wb_rf_we     ),
+        .waddr   (wb_rf_waddr  ),
+        .wdata   (wb_rf_wdata  )
     );
 
     wire sel_r1_wdata;
@@ -257,6 +263,13 @@ module ID(
     assign inst_mfc0    = op_d[6'b01_0000] & rs_d[5'b0_0000];
     assign inst_mtc0    = op_d[6'b01_0000] & rs_d[5'b0_0100];
 
+    assign hilo_op = {
+        inst_mfhi,
+        inst_mflo,
+        inst_mthi,
+        inst_mtlo
+    };
+
     // rs to reg1  
     assign sel_alu_src1[0] = inst_add  | inst_addi  | inst_addu  | inst_addiu 
                            | inst_sub  | inst_subu  | inst_slt   | inst_slti 
@@ -376,6 +389,7 @@ module ID(
     assign stall_for_load = ex_ram_read & (rs_ex_ok | rt_ex_ok);
 
     assign id_to_ex_bus = {
+        hilo_op,        // 167:164
         mem_op,         // 163:159
         id_pc,          // 158:127
         inst,           // 126:95
