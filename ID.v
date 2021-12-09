@@ -34,13 +34,14 @@ module ID(
     wire [31:0] id_pc;
     wire ce;
 
-    wire [4:0] wb_hilo_op;
+    wire [`HILO_BUS-1:0] wb_hilo_bus;
     wire wb_rf_we;
     wire [4:0] wb_rf_waddr;
     wire [31:0] wb_rf_wdata;
 
     wire [4:0] mem_op;
     wire [4:0] hilo_op;
+    wire [`HILO_BUS-1:0] hilo_bus;
 
     reg is_stop;
 
@@ -74,7 +75,7 @@ module ID(
     } = if_to_id_bus_r;
 
     assign {
-        wb_hilo_op,
+        wb_hilo_bus,
         wb_rf_we,
         wb_rf_waddr,
         wb_rf_wdata
@@ -121,15 +122,15 @@ module ID(
     wire [31:0] rdata2_fd;
 
     regfile u_regfile(
-    	.clk     (clk          ),
-        .raddr1  (rs           ),
-        .rdata1  (rdata1       ),
-        .raddr2  (rt           ),
-        .rdata2  (rdata2       ),
-        .hilo_op (wb_hilo_op   ),
-        .we      (wb_rf_we     ),
-        .waddr   (wb_rf_waddr  ),
-        .wdata   (wb_rf_wdata  )
+    	.clk      (clk          ),
+        .raddr1   (rs           ),
+        .rdata1   (rdata1       ),
+        .raddr2   (rt           ),
+        .rdata2   (rdata2       ),
+        .hilo_bus (wb_hilo_bus  ),
+        .we       (wb_rf_we     ),
+        .waddr    (wb_rf_waddr  ),
+        .wdata    (wb_rf_wdata  )
     );
 
     wire sel_r1_wdata;
@@ -263,11 +264,13 @@ module ID(
     assign inst_mfc0    = op_d[6'b01_0000] & rs_d[5'b0_0000];
     assign inst_mtc0    = op_d[6'b01_0000] & rs_d[5'b0_0100];
 
-    assign hilo_op = {
+    assign hilo_bus = {
         inst_mfhi,
         inst_mflo,
         inst_mthi,
-        inst_mtlo
+        inst_mtlo,
+        rs,
+        rd
     };
 
     // rs to reg1  
@@ -389,20 +392,20 @@ module ID(
     assign stall_for_load = ex_ram_read & (rs_ex_ok | rt_ex_ok);
 
     assign id_to_ex_bus = {
-        hilo_op,        // 167:164
-        mem_op,         // 163:159
-        id_pc,          // 158:127
-        inst,           // 126:95
-        alu_op,         // 94:83
-        sel_alu_src1,   // 82:80
-        sel_alu_src2,   // 79:76
-        data_ram_en,    // 75
-        data_ram_wen,   // 74:71
-        rf_we,          // 70
-        rf_waddr,       // 69:65
-        sel_rf_res,     // 64
-        rdata1_fd,      // 63:32
-        rdata2_fd       // 31:0
+        hilo_bus,        // 177:164
+        mem_op,          // 163:159
+        id_pc,           // 158:127
+        inst,            // 126:95
+        alu_op,          // 94:83
+        sel_alu_src1,    // 82:80
+        sel_alu_src2,    // 79:76
+        data_ram_en,     // 75
+        data_ram_wen,    // 74:71
+        rf_we,           // 70
+        rf_waddr,        // 69:65
+        sel_rf_res,      // 64
+        rdata1_fd,       // 63:32
+        rdata2_fd        // 31:0
     };
 
 

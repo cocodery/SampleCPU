@@ -32,7 +32,7 @@ module MEM(
     wire [3:0] data_ram_wen;
     wire sel_rf_res;
 
-    wire [4:0] hilo_op;
+    wire [`HILO_BUS-1:0] hilo_bus;
     wire [4:0] mem_op;
     wire rf_we;
     wire [4:0] rf_waddr;
@@ -41,7 +41,7 @@ module MEM(
     wire [31:0] mem_result;
 
     assign {
-        hilo_op,        // 84:81
+        hilo_bus,       // 94:81
         mem_op,         // 80:76
         mem_pc,         // 75:44
         data_ram_en,    // 43
@@ -166,7 +166,7 @@ module MEM(
     assign rf_wdata = sel_rf_res ? mem_result : ex_result;
 
     assign mem_to_wb_bus = {
-        hilo_op,    // 73:70
+        hilo_bus,   // 83:70
         mem_pc,     // 69:38
         rf_we,      // 37
         rf_waddr,   // 36:32

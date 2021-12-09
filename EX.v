@@ -33,7 +33,7 @@ module EX(
     end
 
     wire [31:0] ex_pc, inst;
-    wire [4:0] hilo_op;
+    wire [`HILO_BUS-1:0] hilo_bus;
     wire [4:0] mem_op;
     wire [11:0] alu_op;
     wire [2:0] sel_alu_src1;
@@ -50,7 +50,7 @@ module EX(
     wire [31:0] rf_rdata2_fd;
 
     assign {
-        hilo_op,        // 167:164
+        hilo_bus,       // 177:164
         mem_op,         // 163:159
         ex_pc,          // 158:127
         inst,           // 126:95
@@ -166,7 +166,7 @@ module EX(
     assign data_sram_wdata = data_sram_wdata_r;
 
     assign ex_to_mem_bus = {
-        hilo_op,        // 84:81
+        hilo_bus,       // 94:81
         mem_op,         // 80:76
         ex_pc,          // 75:44
         data_ram_en,    // 43
