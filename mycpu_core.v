@@ -80,7 +80,7 @@ module mycpu_core(
         .id_to_ex_bus    (id_to_ex_bus    ),
         .hilo_op         (hilo_op         ),
         .ex_to_mem_bus   (ex_to_mem_bus   ),
-        .stall_for ex    (stall_for_ex    ),
+        .stall_for_ex    (stall_for_ex    ),
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),
         .data_sram_addr  (data_sram_addr  ),
