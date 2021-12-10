@@ -34,6 +34,9 @@ module mycpu_core(
     wire stall_for_load;
     wire stall_for_ex;
 
+    wire [31:0] hi_data, lo_data;
+    wire [65:0] hilo_bus;
+
     IF u_IF(
     	.clk             (clk             ),
         .rst             (rst             ),
@@ -75,6 +78,8 @@ module mycpu_core(
     	.clk             (clk             ),
         .rst             (rst             ),
         .stall           (stall           ),
+        .hi_data         (hi_data         ),
+        .lo_data         (lo_data         ),
         .id_to_ex_bus    (id_to_ex_bus    ),
         .ex_to_mem_bus   (ex_to_mem_bus   ),
         .stall_for_ex    (stall_for_ex    ),
@@ -101,6 +106,7 @@ module mycpu_core(
         .stall             (stall             ),
         .mem_to_wb_bus     (mem_to_wb_bus     ),
         .wb_to_rf_bus      (wb_to_rf_bus      ),
+        .hilo_bus          (hilo_bus          ),
         .debug_wb_pc       (debug_wb_pc       ),
         .debug_wb_rf_wen   (debug_wb_rf_wen   ),
         .debug_wb_rf_wnum  (debug_wb_rf_wnum  ),
@@ -113,6 +119,27 @@ module mycpu_core(
         .stall_for_ex      (stall_for_ex      ),
         .flush             (flush             ),
         .stall             (stall             )
+    );
+
+    hilo_reg u_hilo_reg(
+        .clk                (clk                   ),
+        .rst                (rst                   ),
+        .stall              (stall                 ),
+
+        .ex_hi_we           (ex_to_mem_bus[146]    ),
+        .ex_lo_we           (ex_to_mem_bus[145]    ),
+        .ex_hi_in           (ex_to_mem_bus[144:113]),
+        .ex_lo_in           (ex_to_mem_bus[112:81] ),
+
+        .mem_hi_we          (mem_to_wb_bus[135]    ),
+        .mem_lo_we          (mem_to_wb_bus[134]    ),
+        .mem_hi_in          (mem_to_wb_bus[133:102]),
+        .mem_lo_in          (mem_to_wb_bus[101:70] ),
+
+        .hilo_bus           (hilo_bus              ),
+
+        .hi_data            (hi_data               ),
+        .lo_data            (lo_data               )
     );
     
 endmodule

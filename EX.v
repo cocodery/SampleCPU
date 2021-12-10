@@ -4,6 +4,8 @@ module EX(
     input wire rst,
     input wire flush,
     input wire [`StallBus-1:0] stall,
+    input wire [31:0] hi_data,
+    input wire [31:0] lo_data,
 
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
@@ -70,7 +72,10 @@ module EX(
     assign sa_zero_extend = {27'b0,inst[10:6]};
 
     wire [31:0] alu_src1, alu_src2;
-    wire [31:0] alu_result, ex_result;
+    wire [31:0] alu_result;
+    wire [31:0] ex_result;
+    wire [31:0] hilo_result;
+    wire [65:0] hilo_bus;
 
     assign alu_src1 = sel_alu_src1[1] ? ex_pc :
                       sel_alu_src1[2] ? sa_zero_extend :
@@ -87,8 +92,6 @@ module EX(
         .alu_src2    (alu_src2    ),
         .alu_result  (alu_result  )
     );
-
-    assign ex_result = alu_result;
 
     //Store Part
     wire inst_sb, inst_sh, inst_sw;
@@ -164,6 +167,7 @@ module EX(
     assign data_sram_wdata = data_sram_wdata_r;
 
     assign ex_to_mem_bus = {
+        hilo_bus,       // 146:81
         mem_op,         // 80:76
         ex_pc,          // 75:44
         data_ram_en,    // 43
@@ -216,6 +220,20 @@ module EX(
                        op_mul    ? mul_result[31:0] :
                        op_div    ? div_result[31:0] :
                        32'b0;
+
+    assign hilo_result = inst_mfhi ? hi_data :
+                         inst_mflo ? lo_data :
+                         32'b0;
+
+    assign hilo_bus = {
+        hi_we, 
+        lo_we,
+        hi_result,
+        lo_result
+    };
+
+    assign ex_result = (inst_mfhi | inst_mflo) ? hilo_result :
+                       alu_result;
     
     // MUL part
     assign mul_signed = inst_mult;
