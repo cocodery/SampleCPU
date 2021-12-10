@@ -23,7 +23,6 @@ module ID(
     input wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus,
 
     output wire stall_for_load,
-    output wire [8:0] hilo_op,
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
     output wire [`BR_WD-1:0] br_bus 
 );
@@ -38,6 +37,7 @@ module ID(
     wire [31:0] wb_rf_wdata;
 
     wire [4:0] mem_op;
+    wire [8:0] hilo_op;
 
     reg is_stop;
 
@@ -261,8 +261,8 @@ module ID(
     assign inst_mtc0    = op_d[6'b01_0000] & rs_d[5'b0_0100];
 
     assign hilo_op = {
-        inst_mfhi, inst_mflo, inst_mthi, inst_mtlo,
-        inst_mult, inst_multu, inst_div, inst_divu,
+        inst_mfhi, inst_mflo , inst_mthi, inst_mtlo,
+        inst_mult, inst_multu, inst_div , inst_divu,
         inst_mul
     };
 
@@ -385,6 +385,7 @@ module ID(
     assign stall_for_load = ex_ram_read & (rs_ex_ok | rt_ex_ok);
 
     assign id_to_ex_bus = {
+        hilo_op,         // 172:164
         mem_op,          // 163:159
         id_pc,           // 158:127
         inst,            // 126:95

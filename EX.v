@@ -6,7 +6,6 @@ module EX(
     input wire [`StallBus-1:0] stall,
 
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
-    input wire [8:0] hilo_op,
 
     output wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
     output wire stall_for_ex,
@@ -35,6 +34,7 @@ module EX(
     end
 
     wire [31:0] ex_pc, inst;
+    wire [8:0] hilo_op;
     wire [4:0] mem_op;
     wire [11:0] alu_op;
     wire [2:0] sel_alu_src1;
@@ -48,6 +48,7 @@ module EX(
     reg is_in_delayslot;
 
     assign {
+        hilo_op,        // 172:164
         mem_op,         // 163:159
         ex_pc,          // 158:127
         inst,           // 126:95
