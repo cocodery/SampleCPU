@@ -1,5 +1,5 @@
 `include "defines.vh"
-module hilo_reg(
+module hireg_loeg(
     input wire clk,
     input wire rst,
     input wire [`StallBus-1:0] stall,
@@ -18,7 +18,7 @@ module hilo_reg(
     output reg [31:0] lo_data
 );
 
-    reg [31:0] hi_r, lo_r;
+    reg [31:0] reg_hi, reg_lo;
 
     wire wb_hi_we, wb_lo_we;
     wire [31:0] wb_hi_in, wb_lo_in;
@@ -31,19 +31,19 @@ module hilo_reg(
 
     always @ (posedge clk) begin
         if (rst) begin
-            hi_r <= 32'b0;
+            reg_hi <= 32'b0;
         end
         else if (wb_hi_we) begin
-            hi_r <= wb_hi_in;
+            reg_hi <= wb_hi_in;
         end
     end
 
     always @ (posedge clk) begin
         if (rst) begin
-            lo_r <= 32'b0;
+            reg_lo <= 32'b0;
         end
         else if (wb_lo_we) begin
-            lo_r <= wb_lo_in;
+            reg_lo <= wb_lo_in;
         end
     end
 
@@ -52,12 +52,12 @@ module hilo_reg(
     assign hi_temp = ex_hi_we  ? ex_hi_in
                    : mem_hi_we ? mem_hi_in
                    : wb_hi_we  ? wb_hi_in
-                   : hi_r;
+                   : reg_hi;
     
     assign lo_temp = ex_lo_we  ? ex_lo_in
                    : mem_lo_we ? mem_lo_in
                    : wb_lo_we  ? wb_lo_in
-                   : lo_r;
+                   : reg_lo;
 
     always @ (posedge clk) begin
         if (rst) begin
