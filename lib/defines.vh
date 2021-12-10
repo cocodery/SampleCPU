@@ -1,9 +1,8 @@
 `define IF_TO_ID_WD 33
-`define ID_TO_EX_WD 178
-`define EX_TO_MEM_WD 161
-`define MEM_TO_WB_WD 150
-`define WB_TO_RF_WD 118
-`define HILO_BUS 14
+`define ID_TO_EX_WD 164
+`define EX_TO_MEM_WD 81
+`define MEM_TO_WB_WD 70
+`define WB_TO_RF_WD 38
 `define BR_WD 33
 `define DATA_SRAM_WD 69
 

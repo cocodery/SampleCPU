@@ -19,6 +19,11 @@ module CTRL(
             flush  <= 1'b0;
             new_pc <= 32'b0;
         end
+        else if (stall_for_ex) begin
+            stall  <= `StallBus'b00_1111;
+            flush  <= 1'b0;
+            new_pc <= 32'b0;
+        end
         else begin
             stall  <= `StallBus'b0;
             flush  <= 1'b0;

@@ -35,7 +35,6 @@ module EX(
     end
 
     wire [31:0] ex_pc, inst;
-    wire [`HILO_BUS-1:0] hilo_bus;
     wire [4:0] mem_op;
     wire [11:0] alu_op;
     wire [2:0] sel_alu_src1;
@@ -46,11 +45,9 @@ module EX(
     wire [4:0] rf_waddr;
     wire sel_rf_res;
     wire [31:0] rf_rdata1, rf_rdata2;
-    wire [65:0] mul_div_to_hilo;
     reg is_in_delayslot;
 
     assign {
-        hilo_bus,       // 177:164
         mem_op,         // 163:159
         ex_pc,          // 158:127
         inst,           // 126:95
@@ -166,8 +163,6 @@ module EX(
     assign data_sram_wdata = data_sram_wdata_r;
 
     assign ex_to_mem_bus = {
-        mul_div_to_hilo,// 160:95
-        hilo_bus,       // 94:81
         mem_op,         // 80:76
         ex_pc,          // 75:44
         data_ram_en,    // 43
@@ -220,13 +215,6 @@ module EX(
                        op_mul    ? mul_result[31:0] :
                        op_div    ? div_result[31:0] :
                        32'b0;
-
-    assign mul_div_to_hilo = {
-        hi_we,
-        lo_we,
-        hi_result,
-        lo_result
-    };
     
     // MUL part
     assign mul_signed = inst_mult;
