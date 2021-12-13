@@ -1,4 +1,4 @@
-`include "defines.vh"
+`include "lib/defines.vh"
 module hireg_loeg(
     input wire clk,
     input wire rst,
