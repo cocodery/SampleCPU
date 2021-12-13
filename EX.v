@@ -154,9 +154,10 @@ module EX(
                 data_sram_wdata_r <= rf_rdata2;
                 data_sram_wen_r <= 4'b1111;
             end
-            default:begin
-                data_sram_wdata_r = 32'b0;
-                data_sram_wen_r = 4'b0000;
+            default:
+            begin
+                data_sram_wdata_r <= 32'b0;
+                data_sram_wen_r <= 4'b0000;
             end
         endcase
     end
@@ -293,66 +294,69 @@ module EX(
 
     always @ (*) begin
         if (rst) begin
-            stall_for_div = `NoStop;
-            div_opdata1_o = `ZeroWord;
-            div_opdata2_o = `ZeroWord;
-            div_start_o = `DivStop;
-            signed_div_o = 1'b0;
+            stall_for_div <= `NoStop;
+            div_opdata1_o <= `ZeroWord;
+            div_opdata2_o <= `ZeroWord;
+            div_start_o <= `DivStop;
+            signed_div_o <= 1'b0;
         end
         else begin
-            stall_for_div = `NoStop;
-            div_opdata1_o = `ZeroWord;
-            div_opdata2_o = `ZeroWord;
-            div_start_o = `DivStop;
-            signed_div_o = 1'b0;
+            stall_for_div <= `NoStop;
+            div_opdata1_o <= `ZeroWord;
+            div_opdata2_o <= `ZeroWord;
+            div_start_o <= `DivStop;
+            signed_div_o <= 1'b0;
             case ({inst_div, inst_divu})
-                2'b10:begin
+                2'b10:
+                begin
                     if (div_ready_i == `DivResultNotReady) begin
-                        div_opdata1_o = rf_rdata1;
-                        div_opdata2_o = rf_rdata2;
-                        div_start_o = `DivStart;
-                        signed_div_o = 1'b1;
-                        stall_for_div = `Stop;
+                        div_opdata1_o <= rf_rdata1;
+                        div_opdata2_o <= rf_rdata2;
+                        div_start_o <= `DivStart;
+                        signed_div_o <= 1'b1;
+                        stall_for_div <= `Stop;
                     end
                     else if (div_ready_i == `DivResultReady) begin
-                        div_opdata1_o = rf_rdata1;
-                        div_opdata2_o = rf_rdata2;
-                        div_start_o = `DivStop;
-                        signed_div_o = 1'b1;
-                        stall_for_div = `NoStop;
+                        div_opdata1_o <= rf_rdata1;
+                        div_opdata2_o <= rf_rdata2;
+                        div_start_o <= `DivStop;
+                        signed_div_o <= 1'b1;
+                        stall_for_div <= `NoStop;
                     end
                     else begin
-                        div_opdata1_o = `ZeroWord;
-                        div_opdata2_o = `ZeroWord;
-                        div_start_o = `DivStop;
-                        signed_div_o = 1'b0;
-                        stall_for_div = `NoStop;
+                        div_opdata1_o <= `ZeroWord;
+                        div_opdata2_o <= `ZeroWord;
+                        div_start_o <= `DivStop;
+                        signed_div_o <= 1'b0;
+                        stall_for_div <= `NoStop;
                     end
                 end
-                2'b01:begin
+                2'b01:
+                begin
                     if (div_ready_i == `DivResultNotReady) begin
-                        div_opdata1_o = rf_rdata1;
-                        div_opdata2_o = rf_rdata2;
-                        div_start_o = `DivStart;
-                        signed_div_o = 1'b0;
-                        stall_for_div = `Stop;
+                        div_opdata1_o <= rf_rdata1;
+                        div_opdata2_o <= rf_rdata2;
+                        div_start_o <= `DivStart;
+                        signed_div_o <= 1'b0;
+                        stall_for_div <= `Stop;
                     end
                     else if (div_ready_i == `DivResultReady) begin
-                        div_opdata1_o = rf_rdata1;
-                        div_opdata2_o = rf_rdata2;
-                        div_start_o = `DivStop;
-                        signed_div_o = 1'b0;
-                        stall_for_div = `NoStop;
+                        div_opdata1_o <= rf_rdata1;
+                        div_opdata2_o <= rf_rdata2;
+                        div_start_o <= `DivStop;
+                        signed_div_o <= 1'b0;
+                        stall_for_div <= `NoStop;
                     end
                     else begin
-                        div_opdata1_o = `ZeroWord;
-                        div_opdata2_o = `ZeroWord;
-                        div_start_o = `DivStop;
-                        signed_div_o = 1'b0;
-                        stall_for_div = `NoStop;
+                        div_opdata1_o <= `ZeroWord;
+                        div_opdata2_o <= `ZeroWord;
+                        div_start_o <= `DivStop;
+                        signed_div_o <= 1'b0;
+                        stall_for_div <= `NoStop;
                     end
                 end
-                default:begin
+                default:
+                begin
                 end
             endcase
         end
